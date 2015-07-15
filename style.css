@@ -1,0 +1,24 @@
+.container {
+  position: fixed;
+  top: 0;
+  z-index: -1;
+}
+
+.row {
+  height: 2vh;
+  width: 100vw;
+}
+
+.col {
+  display: inline-block;
+  height: 2vh;
+  width: 2vw;
+}
+
+.dead {
+  background-color: blue;
+}
+
+.alive {
+  background-color: red;
+}
