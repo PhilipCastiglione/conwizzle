@@ -1,14 +1,18 @@
 $(document).ready( function() {
 
   var grid = [],
-      size = 50,
-      row;
-  for (var r = 0; r < size; r++) {
-    row = [];
-    for (var c = 0; c < size; c++) {
-      row.push([0,0]);
+      size = 50;
+
+  function clearGrid() {
+    var row;
+    grid = [];
+    for (var r = 0; r < size; r++) {
+      row = [];
+      for (var c = 0; c < size; c++) {
+        row.push([0,0]);
+      }
+      grid.push(row);
     }
-    grid.push(row);
   }
 
   function tick() {
@@ -83,11 +87,38 @@ $(document).ready( function() {
     $('.container').html($grid);
   }
 
-  for (var sl = 20; sl < 30; sl++) {
-    grid[25][sl][0] = 1;
+  function rpentomino() {
+    grid[24][25][0] = 1;
+    grid[24][26][0] = 1;
+    grid[25][24][0] = 1;
+    grid[25][25][0] = 1;
+    grid[26][25][0] = 1;
   }
+
+  function diehard() {
+    grid[24][28][0] = 1;
+    grid[25][22][0] = 1;
+    grid[25][23][0] = 1;
+    grid[26][23][0] = 1;
+    grid[26][27][0] = 1;
+    grid[26][28][0] = 1;
+    grid[26][29][0] = 1;
+  }
+
+  function acorn() {
+    grid[24][23][0] = 1;
+    grid[25][25][0] = 1;
+    grid[26][22][0] = 1;
+    grid[26][23][0] = 1;
+    grid[26][26][0] = 1;
+    grid[26][27][0] = 1;
+    grid[26][28][0] = 1;
+  }
+
+  clearGrid();
+  acorn();
   render(grid);
-  var intervalId = setInterval(tick, 50);
+  var intervalId = setInterval(tick, 100);
 
 });
 
