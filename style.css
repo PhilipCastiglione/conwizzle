@@ -16,9 +16,9 @@
 }
 
 .dead {
-  background-color: blue;
+  background-color: grey;
 }
 
 .alive {
-  background-color: red;
+  background-color: black;
 }
