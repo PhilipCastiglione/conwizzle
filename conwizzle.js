@@ -1,14 +1,71 @@
 $(document).ready( function() {
 
-  var grid = [];
-  // ESTABLISH GRID
-  var size = 50;
+  var grid = [],
+      size = 50,
+      row;
   for (var r = 0; r < size; r++) {
-    var row = [];
+    row = [];
     for (var c = 0; c < size; c++) {
       row.push([0,0]);
     }
     grid.push(row);
+  }
+
+  function tick() {
+    forecastCells(grid);
+    progressCells(grid);
+    render(grid);
+  }
+
+  function forecastCells(grid) {
+    var nextState;
+    for (var r = 0; r < size; r++) {
+      for (var c = 0; c < size; c++) {
+        nextState = determineState(grid, r, c);
+        grid[r][c][1] = nextState;
+      }
+    } 
+  }
+
+  function determineState(grid, r, c) {
+    var score = getCellScore(grid, r, c);
+    if (grid[r][c][0] == 1) {
+      if (score < 2 || score > 3) {
+        return 0;
+      } else {
+        return 1;
+      }
+    } else {
+      if (score != 3) {
+        return 0;
+      } else {
+        return 1;
+      }
+    }
+  }
+
+  function getCellScore(grid, r, c) {
+    var count = 0,
+        neighbourRow,
+        neighbourCol;
+    for (var h = -1; h <= 1; h++) {
+      neighbourRow = (r + h + size) % size;
+      for (var v = -1; v <= 1; v++) {
+        neighbourCol = (c + v + size) % size;
+        if (!(h == 0 && v == 0)) {
+          count += grid[neighbourRow][neighbourCol][0];
+        }
+      }
+    }
+    return count;
+  }
+
+  function progressCells(grid) {
+    for (var r = 0; r < size; r++) {
+      for (var c = 0; c < size; c++) {
+        grid[r][c][0] = grid[r][c][1];
+      }
+    } 
   }
 
   function render(grid) {
@@ -26,55 +83,15 @@ $(document).ready( function() {
     $('.container').html($grid);
   }
 
-  function progressCells(grid) {
-    var nextState, cell;
-    for (var r = 0; r < size; r++) {
-      for (var c = 0; c < size; c++) {
-        cell = grid[r][c];
-        nextState = determineState(grid, cell, r, c);
-        grid[r][c] = progressCell(cell, nextState);
-      }
-    }
+  for (var sl = 20; sl < 30; sl++) {
+    grid[25][sl][0] = 1;
   }
-
-  function determineState(grid, cell, row, col) {
-    var score = getCellScore(grid, row, col);
-    if (cell[0] = 1) {
-      if (score < 2 || score > 3) {
-        return 0;
-      } else {
-        return 1;
-      }
-    } else {
-      if (score != 3) {
-        return 0;
-      } else {
-        return 1;
-      }
-    }
-  }
-
-  function getCellScore(grid, row, col) {
-    var count;
-    for (var x = 0; x < 9; x++) {
-      count += grid[row][col][0];
-    }
-    return count;
-  }
-
-  function progressCell(ary, nextState) {
-    return [ary[1], nextState];
-  }
-
-  function tick() {
-    progressCells(grid);
-    render(grid);
-  }
-
   render(grid);
-  var intervalId = setInterval(tick, 500);
+  var intervalId = setInterval(tick, 50);
 
 });
+
+// currently need to progress the whole grid at once
 
 // include timer in / stage of evolution
 // include controls to stop/pause/restart/modify params
