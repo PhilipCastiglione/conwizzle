@@ -1,8 +1,5 @@
 window.onload = function() {
 
-  var grid = [],
-      size = 50;
-
   function resetGrid() {
     var row;
     grid = [];
@@ -93,36 +90,11 @@ window.onload = function() {
     document.getElementById('container').innerHTML = html;
   }
 
-  function rpentomino() {
-    grid[24][25][0] = 1;
-    grid[24][26][0] = 1;
-    grid[25][24][0] = 1;
-    grid[25][25][0] = 1;
-    grid[26][25][0] = 1;
-  }
+  var grid = [],
+      size = 50;
 
-  function diehard() {
-    grid[24][28][0] = 1;
-    grid[25][22][0] = 1;
-    grid[25][23][0] = 1;
-    grid[26][23][0] = 1;
-    grid[26][27][0] = 1;
-    grid[26][28][0] = 1;
-    grid[26][29][0] = 1;
-  }
-
-  function acorn() {
-    grid[24][23][0] = 1;
-    grid[25][25][0] = 1;
-    grid[26][22][0] = 1;
-    grid[26][23][0] = 1;
-    grid[26][26][0] = 1;
-    grid[26][27][0] = 1;
-    grid[26][28][0] = 1;
-  }
-
-  resetGrid();
-  rpentomino();
+  resetGrid(grid);
+  lwss(grid, size/2, size/2);
   render(grid);
 
   var intervalId = setInterval(tick, 100);
