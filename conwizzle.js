@@ -1,5 +1,6 @@
 window.onload = function() {
 
+  // GRID
   function resetGrid() {
     var row;
     grid = [];
@@ -12,6 +13,7 @@ window.onload = function() {
     }
   }
 
+  // ENGINE
   function tick() {
     forecastCells(grid);
     progressCells(grid);
@@ -90,14 +92,21 @@ window.onload = function() {
     document.getElementById('container').innerHTML = html;
   }
 
+  // PATTERN CREATION
+  function insertPattern(grid, pattern, row, column) {
+    pattern(grid, row, column)
+  }
+
+  // INITIALIZE
   var grid = [],
-      size = 50;
+      size = 50,
+      speed = 100;
 
   resetGrid(grid);
-  lwss(grid, size/2, size/2);
+  insertPattern(grid, lwss, size/2, size/2);
   render(grid);
 
-  var intervalId = setInterval(tick, 100);
+  var intervalId = setInterval(tick, speed);
 
 };
 
