@@ -2,7 +2,7 @@ h1 {
   text-align: center;
 }
 
-.container {
+#container {
   position: fixed;
   top: 0;
   z-index: -1;
