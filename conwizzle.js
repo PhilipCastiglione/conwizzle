@@ -1,9 +1,9 @@
-$(document).ready( function() {
+window.onload = function() {
 
   var grid = [],
       size = 50;
 
-  function clearGrid() {
+  function resetGrid() {
     var row;
     grid = [];
     for (var r = 0; r < size; r++) {
@@ -22,11 +22,9 @@ $(document).ready( function() {
   }
 
   function forecastCells(grid) {
-    var nextState;
     for (var r = 0; r < size; r++) {
       for (var c = 0; c < size; c++) {
-        nextState = determineState(grid, r, c);
-        grid[r][c][1] = nextState;
+        grid[r][c][1] = determineState(grid, r, c);
       }
     } 
   }
@@ -73,18 +71,26 @@ $(document).ready( function() {
   }
 
   function render(grid) {
-    var $grid = $("<div class='grid'>"),
-        $row,
-        state;
+    var html      = "",
+        gridOpen  = "<div class='grid'>",
+        rowOpen   = "<div class='row'>",
+        colOpen   = "<div class='col ",
+        colClose  = "'></div>",
+        rowClose  = "</div>",
+        gridClose = "</div>";
+
+    html += gridOpen;
     for (var r = 0; r < size; r++) {
-    $row = $("<div class='row'>");
-    for (var c = 0; c < size; c++) {
-      state = (grid[r][c][0] == 1)? 'alive' : 'dead';
-      $row.append("<div class='col " + state + "'>");
+      html += rowOpen;
+      for (var c = 0; c < size; c++) {
+        html += colOpen;
+        html += (grid[r][c][0] == 1)? 'alive' : 'dead';
+        html += colClose;
+      }
+      html += rowClose;
     }
-    $grid.append($row);
-    }
-    $('.container').html($grid);
+    html += gridClose;
+    document.getElementById('container').innerHTML = html;
   }
 
   function rpentomino() {
@@ -115,14 +121,13 @@ $(document).ready( function() {
     grid[26][28][0] = 1;
   }
 
-  clearGrid();
-  acorn();
+  resetGrid();
+  rpentomino();
   render(grid);
+
   var intervalId = setInterval(tick, 100);
 
-});
-
-// currently need to progress the whole grid at once
+};
 
 // include timer in / stage of evolution
 // include controls to stop/pause/restart/modify params
