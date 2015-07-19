@@ -46,7 +46,7 @@ window.onload = function() {
       grid[(i + columns - 1 + size) % size],
       grid[(i + columns + size) % size],
       grid[(i + columns + 1 + size) % size]
-    ], function(sum, n) {return sum + n; })
+    ], function(sum, n) {return sum + n; });
   }
 
   // RENDER
@@ -77,7 +77,7 @@ window.onload = function() {
 
   // PATTERNS
   function insertPattern(pattern, i) {
-    pattern(i)
+    pattern(i);
   }
 
   function setCells(i, offsets) {
