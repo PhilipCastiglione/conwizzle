@@ -1,75 +1,60 @@
 window.onload = function() {
 
+  // INITIALIZE
+  var grid = [],
+      rows = 100,
+      columns = 100,
+      speed = 50;
+  var size = rows * columns;
+
+  resetGrid();
+  insertPattern(acorn, size / 2 + columns / 2);
+  render();
+
+  var intervalId = setInterval(tick, speed);
+
   // GRID
   function resetGrid() {
-    var row;
     grid = [];
-    for (var r = 0; r < size; r++) {
-      row = [];
-      for (var c = 0; c < size; c++) {
-        row.push([0,0]);
-      }
-      grid.push(row);
+    for (var i = 0; i < size; i++) {
+      grid.push(0);
     }
   }
 
   // ENGINE
   function tick() {
-    forecastCells(grid);
-    progressCells(grid);
-    render(grid);
+    grid = forecastCells();
+    render();
   }
 
-  function forecastCells(grid) {
-    for (var r = 0; r < size; r++) {
-      for (var c = 0; c < size; c++) {
-        grid[r][c][1] = determineState(grid, r, c);
-      }
-    } 
-  }
-
-  function determineState(grid, r, c) {
-    var score = getCellScore(grid, r, c);
-    if (grid[r][c][0] == 1) {
-      if (score < 2 || score > 3) {
-        return 0;
-      } else {
-        return 1;
-      }
-    } else {
-      if (score != 3) {
-        return 0;
-      } else {
-        return 1;
-      }
+  function forecastCells() {
+    var new_grid = [];
+    for (var i = 0; i < size; i++) {
+      new_grid[i] = determineState(i);
     }
+    return new_grid;
   }
 
-  function getCellScore(grid, r, c) {
-    var count = 0,
-        neighbourRow,
-        neighbourCol;
-    for (var h = -1; h <= 1; h++) {
-      neighbourRow = (r + h + size) % size;
-      for (var v = -1; v <= 1; v++) {
-        neighbourCol = (c + v + size) % size;
-        if (!(h == 0 && v == 0)) {
-          count += grid[neighbourRow][neighbourCol][0];
-        }
-      }
-    }
+  function determineState(i) {
+    var score = getCellScore(i);
+    return (score === 3 || grid[i] == 1 && score === 2)? 1 : 0;
+  }
+
+  function getCellScore(i) {
+    var count = 0;
+    count += grid[(i - columns - 1 + size) % size];
+    count += grid[(i - columns + size) % size];
+    count += grid[(i - columns + 1 + size) % size];
+    count += grid[(i - 1 + size) % size];
+    count += grid[(i + 1 + size) % size];
+    count += grid[(i + columns - 1 + size) % size];
+    count += grid[(i + columns + size) % size];
+    count += grid[(i + columns + 1 + size) % size];
     return count;
   }
 
-  function progressCells(grid) {
-    for (var r = 0; r < size; r++) {
-      for (var c = 0; c < size; c++) {
-        grid[r][c][0] = grid[r][c][1];
-      }
-    } 
-  }
-
-  function render(grid) {
+  // RENDER
+  function render() {
     var html      = "",
         gridOpen  = "<div class='grid'>",
         rowOpen   = "<div class='row'>",
@@ -78,13 +63,15 @@ window.onload = function() {
         rowClose  = "</div>",
         gridClose = "</div>";
 
+    var refactorMe = 0;
     html += gridOpen;
-    for (var r = 0; r < size; r++) {
+    for (var r = 0; r < rows; r++) {
       html += rowOpen;
-      for (var c = 0; c < size; c++) {
+      for (var c = 0; c < columns; c++) {
         html += colOpen;
-        html += (grid[r][c][0] == 1)? 'alive' : 'dead';
+        html += (grid[refactorMe] == 1)? 'alive' : 'dead';
         html += colClose;
+        refactorMe++;
       }
       html += rowClose;
     }
@@ -92,24 +79,73 @@ window.onload = function() {
     document.getElementById('container').innerHTML = html;
   }
 
-  // PATTERN CREATION
-  function insertPattern(grid, pattern, row, column) {
-    pattern(grid, row, column)
+  // PATTERNS
+  function insertPattern(pattern, i) {
+    pattern(i)
   }
 
-  // INITIALIZE
-  var grid = [],
-      size = 50,
-      speed = 100;
+  function setCells(i, offsets) {
+    for (var p = 0; p < offsets.length; p++) {
+      grid[(i + (offsets[p][0] * columns) + offsets[p][1])] = 1;
+    }
+  }
 
-  resetGrid(grid);
-  insertPattern(grid, lwss, size/2, size/2);
-  render(grid);
+  function rpentomino(i) {
+    setCells(i,[[-1,0],
+                [-1,1],
+                [0,-1],
+                [0,0],
+                [1,0]]);
+  }
 
-  var intervalId = setInterval(tick, speed);
+  function diehard(i) {
+    setCells(i,[[-1,3],
+                [0,-3],
+                [0,-2],
+                [1,-2],
+                [1,2],
+                [1,3],
+                [1,4]]);
+  }
+
+  function acorn(i) {
+    setCells(i,[[-1,-2],
+                [0,0],
+                [1,-3],
+                [1,-2],
+                [1,1],
+                [1,2],
+                [1,3]]);
+  }
+
+  function glider(i) {
+    setCells(i,[[-1,-1],
+                [0,0],
+                [0,1],
+                [1,-1],
+                [1,0]]);
+  }
+
+  function lwss(i) {
+    setCells(i,[[-2,-1],
+                [-2,0],
+                [-1,-2],
+                [-1,-1],
+                [-1,0],
+                [-1,1],
+                [0,-2],
+                [0,-1],
+                [0,1],
+                [0,2],
+                [1,0],
+                [1,1]]);
+  }
 
 };
 
+// use canvas
+// check rows columns stuff
 // include timer in / stage of evolution
 // include controls to stop/pause/restart/modify params
+// choice of starting pattern and click etc
 // make a pretty splash for the text

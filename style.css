@@ -9,14 +9,14 @@ h1 {
 }
 
 .row {
-  height: 2vh;
+  height: 1vh;
   width: 100vw;
 }
 
 .col {
   display: inline-block;
-  height: 2vh;
-  width: 2vw;
+  height: 1vh;
+  width: 1vw;
 }
 
 .dead {
