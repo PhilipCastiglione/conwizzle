@@ -28,11 +28,7 @@ window.onload = function() {
   }
 
   function forecastCells() {
-    var new_grid = [];
-    for (var i = 0; i < size; i++) {
-      new_grid[i] = determineState(i);
-    }
-    return new_grid;
+    return _.map(grid, function(val, i) { return determineState(i); });
   }
 
   function determineState(i) {
@@ -41,16 +37,16 @@ window.onload = function() {
   }
 
   function getCellScore(i) {
-    var count = 0;
-    count += grid[(i - columns - 1 + size) % size];
-    count += grid[(i - columns + size) % size];
-    count += grid[(i - columns + 1 + size) % size];
-    count += grid[(i - 1 + size) % size];
-    count += grid[(i + 1 + size) % size];
-    count += grid[(i + columns - 1 + size) % size];
-    count += grid[(i + columns + size) % size];
-    count += grid[(i + columns + 1 + size) % size];
-    return count;
+    return _.reduce([
+      grid[(i - columns - 1 + size) % size],
+      grid[(i - columns + size) % size],
+      grid[(i - columns + 1 + size) % size],
+      grid[(i - 1 + size) % size],
+      grid[(i + 1 + size) % size],
+      grid[(i + columns - 1 + size) % size],
+      grid[(i + columns + size) % size],
+      grid[(i + columns + 1 + size) % size]
+    ], function(sum, n) {return sum + n; })
   }
 
   // RENDER
