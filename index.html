@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title>Conwizzle is a Playa</title>
+  <link rel="shortcut icon" href="conway.png" type="image/x-icon">
   <link rel="stylesheet" href="normalize.css">
   <link rel="stylesheet" href="style.css">
   <script src='underscore.js'></script>
+  <script src='patterns.js'></script>
   <script src='conwizzle.js'></script>
 </head>
 <body>
-  <h1>He gonna play ya</h1>
-  <div id="container"></div>
+  <div class="title"><h1>He gonna play ya</h1></div>
+  <div class="time">Generation: <span id="generation">0</span></div>
+  <canvas id="grid"></canvas>
 </body>
 </html>

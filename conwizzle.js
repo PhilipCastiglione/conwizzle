@@ -1,147 +1,98 @@
+// ON LOAD
 window.onload = function() {
-
-  // INITIALIZE
-  var grid = [],
-      rows = 100,
-      columns = 100,
-      speed = 50;
-  var size = rows * columns;
-
+  setCanvasSize();
   resetGrid();
-  insertPattern(acorn, size / 2 + columns / 2);
-  render();
+  centerPattern('acorn');
+  intervalId = setInterval(tick, speed);
+}
 
-  var intervalId = setInterval(tick, speed);
+// ON RESIZE
+window.onresize = setCanvasSize;
 
-  // GRID
-  function resetGrid() {
-    grid = [];
-    for (var i = 0; i < size; i++) {
-      grid.push(0);
-    }
+// INITIALIZE GLOBALS
+var windowWidth, windowHeight, cellWidth, cellHeight, intervalId;
+var grid = [],
+    rows = 100,
+    columns = 100,
+    speed = 100;
+    generation = 0;
+var size = rows * columns;
+
+// GRID
+function resetGrid() {
+  grid = [];
+  for (var i = 0; i < size; i++) {
+    grid.push(0);
   }
+}
 
-  // ENGINE
-  function tick() {
-    grid = forecastCells();
-    render();
+// PATTERNS
+function centerPattern(pattern) {
+  setCells(size / 2 + columns / 2, patterns[pattern]);
+}
+
+function setCells(i, offsets) {
+  for (var rp = 0; rp < offsets.length; rp++) {
+    grid[(i + (offsets[rp][0] * columns) + offsets[rp][1])] = 1;
   }
+}
 
-  function forecastCells() {
-    return _.map(grid, function(val, i) { return determineState(i); });
-  }
+// ENGINE
+function tick() {
+  generation++;
+  grid = forecastCells();
+  draw();
+}
 
-  function determineState(i) {
-    var score = getCellScore(i);
-    return (score === 3 || grid[i] == 1 && score === 2)? 1 : 0;
-  }
+function forecastCells() {
+  return _.map(grid, function(val, i) {return determineState(i);});
+}
 
-  function getCellScore(i) {
-    return _.reduce([
-      grid[(i - columns - 1 + size) % size],
-      grid[(i - columns + size) % size],
-      grid[(i - columns + 1 + size) % size],
-      grid[(i - 1 + size) % size],
-      grid[(i + 1 + size) % size],
-      grid[(i + columns - 1 + size) % size],
-      grid[(i + columns + size) % size],
-      grid[(i + columns + 1 + size) % size]
-    ], function(sum, n) {return sum + n; });
-  }
+function determineState(i) {
+  var score = getCellScore(i);
+  return (score === 3 || grid[i] == 1 && score === 2)? 1 : 0;
+}
 
-  // RENDER
-  function render() {
-    var html      = "",
-        gridOpen  = "<div class='grid'>",
-        rowOpen   = "<div class='row'>",
-        colOpen   = "<div class='col ",
-        colClose  = "'></div>",
-        rowClose  = "</div>",
-        gridClose = "</div>";
+function getCellScore(i) {
+  return _.reduce([
+    grid[(i - columns - 1 + size) % size],
+    grid[(i - columns + size) % size],
+    grid[(i - columns + 1 + size) % size],
+    grid[(i - 1 + size) % size],
+    grid[(i + 1 + size) % size],
+    grid[(i + columns - 1 + size) % size],
+    grid[(i + columns + size) % size],
+    grid[(i + columns + 1 + size) % size]
+  ], function(sum, n) {return sum + n; });
+}
 
-    var refactorMe = 0;
-    html += gridOpen;
-    for (var r = 0; r < rows; r++) {
-      html += rowOpen;
-      for (var c = 0; c < columns; c++) {
-        html += colOpen;
-        html += (grid[refactorMe] == 1)? 'alive' : 'dead';
-        html += colClose;
-        refactorMe++;
+// RENDER
+function setCanvasSize() {
+  windowWidth = window.innerWidth;
+  windowHeight = window.innerHeight;
+  // may need to refactor this to use integers if resultant floats are unperformant
+  cellWidth = window.innerWidth / rows;
+  cellHeight = window.innerHeight / columns;
+  var canvasElement = document.getElementById('grid');
+  canvasElement.width = windowWidth;
+  canvasElement.height = windowHeight;
+}
+
+function draw() {
+  document.getElementById('generation').innerHTML = generation;
+  var ctx = document.getElementById('grid').getContext('2d');
+  ctx.fillStyle = "rgb(0,0,0)";
+  for (var r = 0; r < rows; r++) {
+    for (var c = 0; c < columns; c++) {
+      if (grid[r * rows + c] == 1) {
+        ctx.fillRect (cellWidth * c, cellHeight * r, cellWidth, cellHeight);
+      } else {
+        ctx.clearRect (cellWidth * c, cellHeight * r, cellWidth, cellHeight);
       }
-      html += rowClose;
-    }
-    html += gridClose;
-    document.getElementById('container').innerHTML = html;
-  }
-
-  // PATTERNS
-  function insertPattern(pattern, i) {
-    pattern(i);
-  }
-
-  function setCells(i, offsets) {
-    for (var p = 0; p < offsets.length; p++) {
-      grid[(i + (offsets[p][0] * columns) + offsets[p][1])] = 1;
     }
   }
+}
 
-  function rpentomino(i) {
-    setCells(i,[[-1,0],
-                [-1,1],
-                [0,-1],
-                [0,0],
-                [1,0]]);
-  }
-
-  function diehard(i) {
-    setCells(i,[[-1,3],
-                [0,-3],
-                [0,-2],
-                [1,-2],
-                [1,2],
-                [1,3],
-                [1,4]]);
-  }
-
-  function acorn(i) {
-    setCells(i,[[-1,-2],
-                [0,0],
-                [1,-3],
-                [1,-2],
-                [1,1],
-                [1,2],
-                [1,3]]);
-  }
-
-  function glider(i) {
-    setCells(i,[[-1,-1],
-                [0,0],
-                [0,1],
-                [1,-1],
-                [1,0]]);
-  }
-
-  function lwss(i) {
-    setCells(i,[[-2,-1],
-                [-2,0],
-                [-1,-2],
-                [-1,-1],
-                [-1,0],
-                [-1,1],
-                [0,-2],
-                [0,-1],
-                [0,1],
-                [0,2],
-                [1,0],
-                [1,1]]);
-  }
-
-};
-
-// use canvas
 // check rows columns stuff
-// include timer in / stage of evolution
-// include controls to stop/pause/restart/modify params
-// choice of starting pattern and click etc
-// make a pretty splash for the text
+// include controls to stop/pause/restart/modify speed, click pattern, starting pattern
+// make it pretty

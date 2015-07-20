@@ -1,28 +1,15 @@
+.title {
+  position: fixed;
+  z-index: 1;
+  width: 100%;
+}
+
 h1 {
   text-align: center;
 }
 
-#container {
+.time {
   position: fixed;
-  top: 0;
-  z-index: -1;
-}
-
-.row {
-  height: 1vh;
-  width: 100vw;
-}
-
-.col {
-  display: inline-block;
-  height: 1vh;
-  width: 1vw;
-}
-
-.dead {
-  background-color: grey;
-}
-
-.alive {
-  background-color: black;
+  z-index: 1;
+  right: 0;
 }
