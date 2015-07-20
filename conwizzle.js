@@ -68,8 +68,8 @@ function getCellScore(i) {
 
 // RENDER
 function setCanvasSize() {
-  windowWidth = window.innerWidth;
-  windowHeight = window.innerHeight;
+  windowWidth = window.innerWidth - 5;
+  windowHeight = window.innerHeight - 5;
   // may need to refactor this to use integers if resultant floats are unperformant
   cellWidth = window.innerWidth / rows;
   cellHeight = window.innerHeight / columns;
@@ -93,6 +93,6 @@ function draw() {
   }
 }
 
-// check rows columns stuff
+// check rows columns stuff on non square grid
 // include controls to stop/pause/restart/modify speed, click pattern, starting pattern
 // make it pretty
