@@ -1,22 +1,73 @@
-// ON LOAD
+// INITIALIZE GLOBALS
+var windowWidth,
+    windowHeight,
+    cellWidth,
+    cellHeight,
+    intervalId,
+    canvasElement,
+    generation,
+    generationElement,
+    grid;
+var rows = 100,
+    columns = 100,
+    speed = 100,
+    startingPattern = 'acorn',
+    clickPattern = 'glider';
+var size = rows * columns;
+
+// EVENTS
 window.onload = function() {
+  resetGame();
+  setClickEvents();
+}
+window.onresize = setCanvasSize;
+
+function setClickEvents() {
+  canvasElement.addEventListener('click', placePattern);
+  document.getElementById('pause').addEventListener('click', pauseGame);
+  document.getElementById('continue').addEventListener('click', continueGame);
+  document.getElementById('reset').addEventListener('click', resetGame);
+  var startButtons = document.getElementsByClassName('start');
+  _.each(startButtons, function(button) {
+    button.addEventListener('click', function() {
+      startingPattern = event.target.dataset.pattern;
+    });
+  });
+  var clickButtons = document.getElementsByClassName('click');
+  _.each(clickButtons, function(button) {
+    button.addEventListener('click', function() {
+      clickPattern = event.target.dataset.pattern;
+    });
+  });
+  var speedButtons = document.getElementsByClassName('speed');
+  _.each(speedButtons, function(button) {
+    button.addEventListener('click', function() {
+      speed = parseInt(event.target.dataset.speed, 10);
+      continueGame();
+    })
+  });
+}
+
+// GAME CONTROLS
+function resetGame() {
+  generationElement = document.getElementById('generation');
+  generation = 0
+  canvasElement = document.getElementById('grid');
   setCanvasSize();
   resetGrid();
-  centerPattern('acorn');
+  startPattern();
+  clearInterval(intervalId);
   intervalId = setInterval(tick, speed);
 }
 
-// ON RESIZE
-window.onresize = setCanvasSize;
+function pauseGame() {
+  clearInterval(intervalId);
+}
 
-// INITIALIZE GLOBALS
-var windowWidth, windowHeight, cellWidth, cellHeight, intervalId;
-var grid = [],
-    rows = 100,
-    columns = 100,
-    speed = 50;
-    generation = 0;
-var size = rows * columns;
+function continueGame() {
+  clearInterval(intervalId);
+  intervalId = setInterval(tick, speed);
+}
 
 // GRID
 function resetGrid() {
@@ -27,13 +78,20 @@ function resetGrid() {
 }
 
 // PATTERNS
-function centerPattern(pattern) {
-  setCells(size / 2 + columns / 2, patterns[pattern]);
+function startPattern() {
+  setCells(size / 2 + columns / 2, patterns[startingPattern]);
+}
+
+function placePattern() {
+  var clickedRow = parseInt(event.offsetY / cellHeight, 10);
+  var clickedCol = parseInt(event.offsetX / cellWidth, 10);
+  setCells(clickedRow * columns + clickedCol, patterns[clickPattern]);
+  draw();
 }
 
 function setCells(i, offsets) {
-  for (var rp = 0; rp < offsets.length; rp++) {
-    grid[(i + (offsets[rp][0] * columns) + offsets[rp][1])] = 1;
+  for (var coords = 0; coords < offsets.length; coords++) {
+    grid[(i + (offsets[coords][0] * columns) + offsets[coords][1])] = 1;
   }
 }
 
@@ -56,33 +114,29 @@ function determineState(i) {
 function getCellScore(i) {
   return _.reduce([
     grid[(i - columns - 1 + size) % size],
-    grid[(i - columns + size) % size],
+    grid[(i - columns     + size) % size],
     grid[(i - columns + 1 + size) % size],
-    grid[(i - 1 + size) % size],
-    grid[(i + 1 + size) % size],
+    grid[(i           - 1 + size) % size],
+    grid[(i           + 1 + size) % size],
     grid[(i + columns - 1 + size) % size],
-    grid[(i + columns + size) % size],
+    grid[(i + columns     + size) % size],
     grid[(i + columns + 1 + size) % size]
   ], function(sum, n) {return sum + n; });
 }
 
 // RENDER
 function setCanvasSize() {
-  windowWidth = window.innerWidth - 5;
-  windowHeight = window.innerHeight - 5;
-  // may need to refactor this to use integers if resultant floats are unperformant
-  cellWidth = windowWidth / rows;
-  cellHeight = windowHeight / columns;
-  var canvasElement = document.getElementById('grid');
+  windowWidth = window.innerWidth - 6;
+  windowHeight = window.innerHeight - 6;
+  cellWidth = windowWidth / rows;      // may need to refactor this to use integers
+  cellHeight = windowHeight / columns; // if resultant floats are unperformant
   canvasElement.width = windowWidth;
   canvasElement.height = windowHeight;
 }
 
 function draw() {
-  // update generation number
-  document.getElementById('generation').innerHTML = generation;
-  // draw cell grid
-  var ctx = document.getElementById('grid').getContext('2d');
+  generationElement.innerHTML = generation;
+  var ctx = canvasElement.getContext('2d');
   ctx.fillStyle = "rgb(0,0,0)";
   for (var r = 0; r < rows; r++) {
     for (var c = 0; c < columns; c++) {
@@ -96,8 +150,4 @@ function draw() {
 }
 
 // check rows columns stuff on non square grid
-// maybe refactor draw loops
-// maybe refactor getcellscore
-// create method for non centred pattern instantiation
-// include controls to stop/pause/restart/modify speed, click pattern, starting pattern
 // make it pretty

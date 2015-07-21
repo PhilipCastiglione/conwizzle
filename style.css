@@ -1,11 +1,24 @@
 .title {
   position: fixed;
+  top: 30px;
+  left: 35%;
   z-index: 1;
-  width: 100%;
+  display: inline-block;
+  width: 30%;
 }
 
 h1 {
   text-align: center;
+}
+
+p, button {
+  font-size: 10px;
+}
+
+.controls {
+  position: fixed;
+  z-index: 1;
+  left: 0;
 }
 
 .time {
@@ -15,6 +28,6 @@ h1 {
 }
 
 #grid {
-  margin-top: 2px;
-  martgin-left: 2px;
+  margin-top: 3px;
+  margin-left: 3px;
 }
