@@ -14,7 +14,7 @@ var windowWidth, windowHeight, cellWidth, cellHeight, intervalId;
 var grid = [],
     rows = 100,
     columns = 100,
-    speed = 100;
+    speed = 50;
     generation = 0;
 var size = rows * columns;
 
@@ -71,15 +71,17 @@ function setCanvasSize() {
   windowWidth = window.innerWidth - 5;
   windowHeight = window.innerHeight - 5;
   // may need to refactor this to use integers if resultant floats are unperformant
-  cellWidth = window.innerWidth / rows;
-  cellHeight = window.innerHeight / columns;
+  cellWidth = windowWidth / rows;
+  cellHeight = windowHeight / columns;
   var canvasElement = document.getElementById('grid');
   canvasElement.width = windowWidth;
   canvasElement.height = windowHeight;
 }
 
 function draw() {
+  // update generation number
   document.getElementById('generation').innerHTML = generation;
+  // draw cell grid
   var ctx = document.getElementById('grid').getContext('2d');
   ctx.fillStyle = "rgb(0,0,0)";
   for (var r = 0; r < rows; r++) {
@@ -94,5 +96,8 @@ function draw() {
 }
 
 // check rows columns stuff on non square grid
+// maybe refactor draw loops
+// maybe refactor getcellscore
+// create method for non centred pattern instantiation
 // include controls to stop/pause/restart/modify speed, click pattern, starting pattern
 // make it pretty

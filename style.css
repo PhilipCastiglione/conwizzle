@@ -13,3 +13,8 @@ h1 {
   z-index: 1;
   right: 0;
 }
+
+#grid {
+  margin-top: 2px;
+  martgin-left: 2px;
+}
