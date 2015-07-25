@@ -27,24 +27,27 @@ function setClickEvents() {
   document.getElementById('pause').addEventListener('click', pauseGame);
   document.getElementById('continue').addEventListener('click', continueGame);
   document.getElementById('reset').addEventListener('click', resetGame);
-  var startButtons = document.getElementsByClassName('start');
-  _.each(startButtons, function(button) {
-    button.addEventListener('click', function() {
-      startingPattern = event.target.dataset.pattern;
+
+  function buttonsAndShit(className, callback) {
+    _.each(document.getElementsByClassName(className), function(btn) {
+      btn.addEventListener('click', function() {
+        _.each(document.getElementsByClassName(className), function(b2) {
+          b2.className = className;
+        });
+        event.target.className += " selected";
+        callback();
+      });
     });
+  }
+  buttonsAndShit('start', function() {
+    startingPattern = event.target.dataset.pattern;
   });
-  var clickButtons = document.getElementsByClassName('click');
-  _.each(clickButtons, function(button) {
-    button.addEventListener('click', function() {
-      clickPattern = event.target.dataset.pattern;
-    });
+  buttonsAndShit('click', function() {
+    clickPattern = event.target.dataset.pattern;
   });
-  var speedButtons = document.getElementsByClassName('speed');
-  _.each(speedButtons, function(button) {
-    button.addEventListener('click', function() {
-      speed = parseInt(event.target.dataset.speed, 10);
-      continueGame();
-    })
+  buttonsAndShit('speed', function() {
+    speed = parseInt(event.target.dataset.speed, 10);
+    continueGame();
   });
 }
 
@@ -137,7 +140,7 @@ function setCanvasSize() {
 function draw() {
   generationElement.innerHTML = generation;
   var ctx = canvasElement.getContext('2d');
-  ctx.fillStyle = "rgb(0,0,0)";
+  ctx.fillStyle = "rgb(0,100,255)";
   for (var r = 0; r < rows; r++) {
     for (var c = 0; c < columns; c++) {
       if (grid[r * rows + c] == 1) {
@@ -150,4 +153,3 @@ function draw() {
 }
 
 // check rows columns stuff on non square grid
-// make it pretty
